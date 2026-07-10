@@ -82,9 +82,7 @@ export function HotAnalysisVisuals({ hot, filterSource }: HotAnalysisVisualsProp
             {hot.yearSummaries.map((item) => (
               <Link
                 key={`year-bar-${item.year}`}
-                className={`bar-chart__item ${
-                  selectedTerm ? "bar-chart__item--interactive" : ""
-                }`}
+                className={`bar-chart__item ${selectedTerm ? "bar-chart__item--interactive" : ""}`}
                 href={buildProjectsLink(
                   filterSource,
                   hot.keyword || selectedTerm || undefined,
@@ -163,31 +161,42 @@ export function HotAnalysisVisuals({ hot, filterSource }: HotAnalysisVisualsProp
         <div className="visual-card__title">环形热点词云</div>
         <div className="ring-cloud-wrap">
           <div className="ring-cloud-tip">
-            {hoverText || (selectedTerm ? `当前高亮：${selectedTerm}` : "将鼠标移动到热点词上查看说明")}
+            {hoverText || (selectedTerm ? `当前高亮：${selectedTerm}` : "将鼠标移到热点词上查看说明")}
           </div>
           <div className="ring-cloud">
             {cloudPositions.map((item, index) => {
               const isActive = selectedTerm === item.term;
               return (
-                <button
+                <Link
                   key={`${item.term}-${index}`}
                   className={`ring-cloud__item ring-cloud__item--${index % 6} ${
                     isActive ? "ring-cloud__item--active" : ""
                   }`}
-                  onClick={() => setActiveTerm(item.term)}
+                  href={buildProjectsLink(
+                    filterSource,
+                    hot.keyword || item.searchText,
+                    undefined,
+                    hot.discipline || undefined
+                  )}
                   onMouseEnter={() => {
-                    setHoverText(`${item.term}：出现 ${item.count} 次`);
+                    setActiveTerm(item.term);
+                    setHoverText(`${item.term}：出现 ${item.count} 次，点击查看检索结果`);
                   }}
                   onMouseLeave={() => setHoverText("")}
+                  onFocus={() => {
+                    setActiveTerm(item.term);
+                    setHoverText(`${item.term}：出现 ${item.count} 次，点击查看检索结果`);
+                  }}
+                  onBlur={() => setHoverText("")}
                   style={{
                     left: `${item.left}%`,
                     top: `${item.top}%`
                   }}
-                  type="button"
+                  title={`查看“${item.term}”相关项目`}
                 >
                   <span>{item.term}</span>
                   <em>{item.count}</em>
-                </button>
+                </Link>
               );
             })}
           </div>
@@ -230,7 +239,7 @@ export function HotAnalysisVisuals({ hot, filterSource }: HotAnalysisVisualsProp
                     hot.discipline || undefined
                   )}
                   onMouseEnter={() => {
-                    setHoverText(`${summary.year} 年 "${term}" 相关项目 ${cell?.count ?? 0} 项`);
+                    setHoverText(`${summary.year} 年“${term}”相关项目 ${cell?.count ?? 0} 项`);
                   }}
                   onMouseLeave={() => setHoverText("")}
                   style={{

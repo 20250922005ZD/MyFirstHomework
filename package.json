@@ -2,7 +2,7 @@
   "name": "yangjingjing",
   "version": "1.0.0",
   "private": true,
-  "description": "省部级以上基金课题项目查询工具",
+  "description": "省部级以上基金课题项目统一检索与分析工具",
   "scripts": {
     "dev": "next dev",
     "build": "next build",

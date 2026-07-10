@@ -79,7 +79,7 @@ export async function SearchForm({
         </label>
 
         <button className="primary-button" type="submit">
-          开始检索
+          检索
         </button>
       </div>
     </form>

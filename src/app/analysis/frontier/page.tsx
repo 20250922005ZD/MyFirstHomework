@@ -1,4 +1,8 @@
 import Link from "next/link";
+import { HistoryTracker } from "@/components/history-tracker";
+import { FrontierGraph } from "@/components/frontier-graph";
+import { SubpageFooterNav } from "@/components/subpage-footer-nav";
+import { SubpageTopNav } from "@/components/subpage-top-nav";
 import { DISCIPLINE_OPTIONS } from "@/lib/disciplines";
 import { getHomeInsights } from "@/lib/home-insights";
 import { SOURCE_LABELS } from "@/lib/source-labels";
@@ -60,15 +64,25 @@ export default async function FrontierAnalysisPage({
 
   return (
     <main className="page-shell page-shell--wide page-shell--results">
+      <HistoryTracker
+        category="前沿发现"
+        href={`/analysis/frontier?${new URLSearchParams({
+          ...(source ? { source } : {}),
+          ...(frontierDiscipline ? { frontierDiscipline } : {}),
+          ...(frontierYears ? { frontierYears: String(frontierYears) } : {}),
+          ...(frontierKeyword ? { frontierKeyword } : {})
+        }).toString()}`}
+        title={frontierKeyword ? `前沿发现：${frontierKeyword}` : "前沿发现"}
+      />
+
+      <SubpageTopNav currentPath="/analysis/frontier" />
+
       <section className="search-workbench analysis-workbench">
         <div className="search-workbench__top">
           <div>
             <h1>前沿发现</h1>
             <p>按来源、学科分类、分析时段和关键词筛选，结果以词云和关键词共现图谱形式展示。</p>
           </div>
-          <Link className="search-workbench__back" href="/">
-            返回首页
-          </Link>
         </div>
 
         <form action="/analysis/frontier" className="analysis-filter analysis-filter--page">
@@ -124,8 +138,7 @@ export default async function FrontierAnalysisPage({
 
       <section className="analysis-panel analysis-panel--page">
         <div className="analysis-caption analysis-caption--page">
-          当前范围：{insights.sourceLabel} / {insights.frontier.discipline || "全部学科"} / 近{" "}
-          {insights.frontier.rangeLabel}
+          当前范围：{insights.sourceLabel} / {insights.frontier.discipline || "全部学科"} / {insights.frontier.rangeLabel}
           {insights.frontier.keyword ? ` / 关键词：${insights.frontier.keyword}` : ""}
         </div>
 
@@ -147,54 +160,7 @@ export default async function FrontierAnalysisPage({
           ))}
         </div>
 
-        <div className="graph-card graph-card--page">
-          <svg className="graph-lines" viewBox="0 0 1000 560" preserveAspectRatio="none">
-            {insights.frontier.graphEdges.map((edge, index) => {
-              const sourceIndex = insights.frontier.graphNodes.findIndex(
-                (node) => node.id === edge.source
-              );
-              const targetIndex = insights.frontier.graphNodes.findIndex(
-                (node) => node.id === edge.target
-              );
-              const sourceX = 130 + (sourceIndex % 4) * 230;
-              const sourceY = 90 + Math.floor(sourceIndex / 4) * 140;
-              const targetX = 130 + (targetIndex % 4) * 230;
-              const targetY = 90 + Math.floor(targetIndex / 4) * 140;
-
-              return (
-                <path
-                  key={`${edge.source}-${edge.target}-${index}`}
-                  d={`M ${sourceX} ${sourceY} C ${(sourceX + targetX) / 2} ${sourceY}, ${(sourceX + targetX) / 2} ${targetY}, ${targetX} ${targetY}`}
-                  stroke={`rgba(35, 79, 61, ${Math.min(0.2 + edge.weight * 0.06, 0.62)})`}
-                  strokeWidth={Math.min(1 + edge.weight * 0.55, 4)}
-                  fill="none"
-                />
-              );
-            })}
-          </svg>
-
-          <div className="graph-nodes">
-            {insights.frontier.graphNodes.map((node, index) => (
-              <Link
-                key={node.id}
-                className={`graph-node graph-node--${index % 6}`}
-                href={buildProjectsLink(
-                  insights.filterSource,
-                  node.searchText,
-                  undefined,
-                  insights.frontier.discipline || undefined
-                )}
-                style={{
-                  left: `${7 + (index % 4) * 22.5}%`,
-                  top: `${9 + Math.floor(index / 4) * 24}%`
-                }}
-              >
-                <span>{node.label}</span>
-                <em>{node.value}</em>
-              </Link>
-            ))}
-          </div>
-        </div>
+        <FrontierGraph filterSource={insights.filterSource} frontier={insights.frontier} />
 
         <div className="graph-legend graph-legend--page">
           <span>节点大小表示主题出现频次</span>
@@ -202,6 +168,8 @@ export default async function FrontierAnalysisPage({
           <span>点击节点可进入对应项目检索结果</span>
         </div>
       </section>
+
+      <SubpageFooterNav currentPath="/analysis/frontier" />
     </main>
   );
 }

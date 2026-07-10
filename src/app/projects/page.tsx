@@ -1,6 +1,9 @@
 import Link from "next/link";
+import { HistoryTracker } from "@/components/history-tracker";
 import { ProjectList } from "@/components/project-list";
 import { SearchForm } from "@/components/search-form";
+import { SubpageFooterNav } from "@/components/subpage-footer-nav";
+import { SubpageTopNav } from "@/components/subpage-top-nav";
 import { listProjects } from "@/lib/project-repository";
 import type { ProjectSource } from "@/types/project";
 
@@ -34,18 +37,28 @@ export default async function ProjectsPage({ searchParams }: ProjectsPageProps) 
 
   return (
     <main className="page-shell page-shell--wide page-shell--results">
+      <HistoryTracker
+        category="项目检索"
+        href={`/projects?${new URLSearchParams({
+          ...(title ? { title } : {}),
+          ...(discipline ? { discipline } : {}),
+          ...(institution ? { institution } : {}),
+          ...(source ? { source } : {}),
+          ...(year ? { year } : {})
+        }).toString()}`}
+        title={title ? `项目检索：${title}` : "项目检索"}
+      />
+
+      <SubpageTopNav currentPath="/projects" />
+
       <section className="search-workbench">
         <div className="search-workbench__top">
           <div>
             <h1>基金课题项目检索</h1>
             <p>
-              支持按课题名称、学科分类、工作单位、来源与立项年份组合检索，结果以连续列表呈现，
-              便于横向对比。
+              支持按课题名称、学科分类、工作单位、来源与立项年份组合检索，结果以连续列表呈现，便于横向对比。
             </p>
           </div>
-          <Link className="search-workbench__back" href="/">
-            返回首页
-          </Link>
         </div>
 
         <div className="search-workbench__form">
@@ -60,6 +73,7 @@ export default async function ProjectsPage({ searchParams }: ProjectsPageProps) 
       </section>
 
       <ProjectList response={response} />
+      <SubpageFooterNav currentPath="/projects" />
     </main>
   );
 }

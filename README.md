@@ -1,116 +1,22 @@
 # 基金课题项目查询工具
 
-面向科研工作者的基金课题项目统一检索工具。当前版本聚焦“教育部人文社科项目 + 国家社科基金项目”两类公开来源，支持按课题名称、学科分类、工作单位、来源、立项年份进行组合检索，并以列表方式展示结果，方便横向对比。
+面向科研工作者的省部级以上基金课题项目统一检索与分析原型。当前版本重点解决“项目分散、检索重复、横向对比不便”的问题，提供项目检索、热点分析、前沿发现、成果查询、项目通知、浏览记录和用户互动等页面。
 
-## 项目目标
+## 项目简介
 
-- 把分散在不同网站的基金课题项目信息统一到一个检索入口
-- 降低逐站点检索、重复筛选、重复比对的成本
-- 为后续继续接入更多省部级以上公开项目数据库预留结构
+科研工作者在查询基金项目时，通常需要分别访问教育部、国家社科基金等多个站点，重复输入检索条件，再手动对比结果。本项目将这些入口整理为一个本地可运行的 Web 工具，便于统一检索和初步分析。
 
-## 当前已实现
+当前版本强调：
 
-- 首页统一检索入口
-- 检索页组合筛选
-- `课题名称` 输入式检索
-- `学科分类` 下拉筛选
-- `工作单位` 输入式检索
-- `来源` 下拉筛选
-- `立项年份` 下拉筛选
-- 列表化结果展示，便于对比
-- 教育部项目本地快照查询
-- 国家社科基金实时查询接入
-- 查询结果直接展示核心字段，不再依赖单独详情页
+- 先把核心检索链路跑通
+- 优先支持公开来源与本地快照
+- 优先提供可演示、可扩展的原型页面
 
-## 当前数据来源
+## 核心功能
 
-- 教育部人文社会科学研究项目
-- 国家社科基金项目数据库
-  - 实时查询地址：[https://fz.people.com.cn/skygb/sk/index.php/index/seach/](https://fz.people.com.cn/skygb/sk/index.php/index/seach/)
+### 1. 项目检索
 
-说明：
-
-- `source=moe` 主要走本地标准化快照
-- `source=npopss` 走远程实时查询
-
-## 技术栈
-
-- 前端：Next.js 16 + React 19 + TypeScript
-- 服务端：Next.js App Router + Route Handlers
-- 抓取与解析：Cheerio、Playwright、pdf-parse、xlsx
-- 数据层：Prisma + PostgreSQL
-- 无数据库兜底：本地 JSON 快照
-
-## 目录说明
-
-```text
-.
-├─ README.md
-├─ design.md
-├─ acceptance.md
-├─ step-1.md ~ step-8.md
-├─ data/
-├─ prisma/
-├─ scripts/
-└─ src/
-   ├─ app/
-   ├─ components/
-   ├─ crawlers/
-   ├─ lib/
-   └─ types/
-```
-
-## 本地运行
-
-安装依赖：
-
-```bash
-npm install
-```
-
-启动开发环境：
-
-```bash
-npm run dev
-```
-
-生产构建：
-
-```bash
-npm run build
-```
-
-类型检查：
-
-```bash
-npm run typecheck
-```
-
-Windows PowerShell 下如果遇到命令执行策略或别名问题，可使用：
-
-```bash
-npm.cmd run dev
-npm.cmd run build
-npm.cmd run typecheck
-```
-
-## 抓取脚本
-
-```bash
-npm run crawl:moe
-npm run crawl:nsfc
-npm run crawl:npopss
-npm run crawl
-```
-
-说明：
-
-- 当前项目既支持抓取脚本沉淀本地数据，也支持部分来源实时查询
-- 第一版更强调“先跑通检索链路”，不是完整的大规模全网抓取平台
-
-## 检索参数
-
-当前检索页支持以下字段：
+支持按以下条件组合检索：
 
 - 课题名称
 - 学科分类
@@ -118,38 +24,271 @@ npm run crawl
 - 来源
 - 立项年份
 
-其中：
+结果以表格列表展示，适合横向对比多个项目。
 
-- 来源和立项年份为稳定筛选项
-- 学科分类使用固定下拉项
-- 检索结果以表格/列表方式呈现，适合多项目并排比对
+### 2. 热点分析
 
-## 项目文档
+基于近年项目标题生成热点分析页面，支持：
 
-- 详细设计：[design.md](C:\Users\admin\Documents\yangjingjing\design.md)
-- 验收标准：[acceptance.md](C:\Users\admin\Documents\yangjingjing\acceptance.md)
-- 开发拆解：
-  - [step-1.md](C:\Users\admin\Documents\yangjingjing\step-1.md)
-  - [step-2.md](C:\Users\admin\Documents\yangjingjing\step-2.md)
-  - [step-3.md](C:\Users\admin\Documents\yangjingjing\step-3.md)
-  - [step-4.md](C:\Users\admin\Documents\yangjingjing\step-4.md)
-  - [step-5.md](C:\Users\admin\Documents\yangjingjing\step-5.md)
-  - [step-6.md](C:\Users\admin\Documents\yangjingjing\step-6.md)
-  - [step-7.md](C:\Users\admin\Documents\yangjingjing\step-7.md)
-  - [step-8.md](C:\Users\admin\Documents\yangjingjing\step-8.md)
+- 按来源筛选
+- 按学科分类筛选
+- 按分析时段筛选
+- 输入关键词聚焦
+- 环形热点词云
+- 年度柱状图与热力分布
 
-## 当前状态
+### 3. 前沿发现
 
-- Web 页面已经可以本地运行
-- `/projects` 页面支持组合检索与结果浏览
-- 国家社科基金来源已接入到统一检索页面
-- 后续可继续完善分页、更多数据源接入、结果导出与对比分析能力
+基于项目标题关键词共现生成前沿图谱，支持：
 
-## 暂不包含
+- 按来源筛选
+- 按学科分类筛选
+- 按分析时段筛选
+- 输入关键词聚焦
+- 关键词词云
+- 中心主题 + 环状辐射图谱
 
-- 登录注册
-- 支付会员
-- 后台管理系统
-- 复杂权限系统
-- 全量自动调度抓取平台
-- 全站全文检索与智能推荐
+### 4. 成果查询
+
+围绕“项目”去找“成果线索”，而不是直接做第三方平台全文抓取。当前支持：
+
+- 按项目名称、批准号、负责人、单位等条件检索
+- 输出论文、著作、结项成果等线索
+- 补充知网、读秀、万方等外部平台检索入口
+
+说明：
+
+- 当前仅提供成果线索和跳转入口
+- 不提供知网、读秀等平台全文抓取或全文下载
+
+### 5. 项目通知
+
+汇总常用官方通知入口，方便查看申报通知与公告。
+
+### 6. 浏览记录
+
+自动保存当前浏览器中的最近访问记录，保存在本地 `localStorage`。
+
+### 7. 用户互动
+
+提供轻量讨论区，支持查看话题、浏览回帖和新增本地评论。
+
+## 技术栈
+
+- `Next.js 16`
+- `React 19`
+- `TypeScript`
+- `Next.js App Router` + `Route Handlers`
+- `Prisma`
+- `PostgreSQL`（可选）
+- `Cheerio`
+- `Playwright`
+- `pdf-parse`
+- `xlsx`
+
+## 安装方法
+
+### 环境要求
+
+- Node.js 20.9 或更高
+- npm
+
+### 1. 安装依赖
+
+```bash
+npm install
+```
+
+### 2. 本地快照与可选数据库
+
+项目根目录默认包含本地快照文件 `data/projects.snapshot.json`，当前原型主要依赖这份快照运行，因此在没有数据库时也可以直接启动和预览页面。
+
+当前数据策略是：
+
+- Web 原型页面默认优先使用本地快照
+- 当本地快照不可用时，部分模块会回退到样例数据
+- PostgreSQL / Prisma 主要用于后续抓取入库与扩展能力，不是本地演示的必需前提
+
+如果需要数据库：
+
+1. 复制 `.env.example`
+2. 新建 `.env`
+3. 配置 `DATABASE_URL`
+
+示例：
+
+```env
+DATABASE_URL="postgresql://username:password@localhost:5432/yangjingjing"
+```
+
+如果只是本地预览页面，可以先不配置数据库。
+
+### 3. 可选：生成 Prisma 客户端
+
+```bash
+npm run prisma:generate
+```
+
+## 启动方法
+
+### 开发模式
+
+```bash
+npm run dev
+```
+
+访问地址：
+
+```text
+http://localhost:3000
+```
+
+### PowerShell 推荐写法
+
+如果 PowerShell 中 `npm` 有执行策略问题，可使用：
+
+```bash
+npm.cmd run dev
+```
+
+### 构建检查
+
+```bash
+npm run build
+```
+
+### 类型检查
+
+```bash
+npm run typecheck
+```
+
+## 使用流程
+
+### 项目检索
+
+1. 打开首页
+2. 输入课题名称
+3. 选择学科分类
+4. 输入工作单位
+5. 选择来源和立项年份
+6. 点击“检索”
+7. 在结果页对比项目列表
+
+### 热点分析
+
+1. 打开“热点分析”
+2. 选择来源、学科分类和分析时段
+3. 可输入关键词缩小范围
+4. 点击检索
+5. 查看词云、柱状图和热力分布
+
+### 前沿发现
+
+1. 打开“前沿发现”
+2. 选择来源、学科分类和分析时段
+3. 可输入关键词缩小范围
+4. 点击检索
+5. 查看词云与前沿图谱
+
+### 成果查询
+
+1. 打开“成果查询”
+2. 进入详细检索页
+3. 输入项目名称、批准号、负责人或单位
+4. 选择成果类型等条件
+5. 查看成果线索及外部平台入口
+
+## 示例输入输出
+
+### 示例 1：项目检索
+
+输入：
+
+- 课题名称：`教育`
+- 学科分类：`教育学`
+- 来源：`国家社科基金`
+- 立项年份：`2025`
+
+输出：
+
+- 项目标题列表
+- 负责人
+- 工作单位
+- 学科分类
+- 基金类别
+- 来源
+- 立项年份
+
+### 示例 2：成果查询
+
+输入：
+
+- 项目名称：`教育数字化`
+- 成果类型：`论文`
+
+输出：
+
+- 成果标题
+- 作者
+- 成果类型
+- 来源平台
+- 关联项目
+- 可信度标签
+- 知网 / 读秀 / 万方跳转入口
+
+## 当前限制
+
+- 当前仍是原型系统，部分结果依赖本地快照或样例数据
+- 仓库默认包含一份本地项目快照，体积相对较大，但可保证无数据库场景下也能演示主要功能
+- 成果查询当前以“成果线索”形式提供，不是完整成果数据库
+- 用户互动与浏览记录保存在当前浏览器本地，不跨设备同步
+- 未实现登录、支付、后台管理等大型系统能力
+- 不是所有基金来源都已接入，目前以教育部、国家社科等公开来源为主
+- 部分快照数据来自历史抓取，个别中文字段可能仍需继续清洗
+
+## 常见问题
+
+### 没配数据库能跑吗？
+
+可以。当前项目支持依赖本地快照和样例数据运行。
+
+### 为什么有些页面像示例数据？
+
+因为当前版本是原型系统，部分模块优先保证流程可用，再逐步替换为更完整的真实数据来源。
+
+### 为什么成果查询没有全文？
+
+这是产品边界。当前版本只做成果线索发现和平台跳转，不做第三方平台全文抓取与下载。
+
+### 浏览记录和评论为什么刷新后还在？
+
+因为它们保存在浏览器本地 `localStorage` 中。
+
+## 常用命令
+
+```bash
+npm run dev
+npm run build
+npm run typecheck
+npm run prisma:generate
+npm run prisma:validate
+npm run crawl:moe
+npm run crawl:nsfc
+npm run crawl:npopss
+npm run crawl
+```
+
+## 后续计划
+
+- 继续清洗历史抓取数据中的中文字段
+- 补充更多真实基金来源
+- 强化成果查询中的公开成果线索来源
+- 优化热点分析与前沿发现的可视化质量
+- 为用户互动增加更完整的轻量社区能力
+
+## 相关文档
+
+- [design.md](C:/Users/admin/Documents/yangjingjing/design.md)
+- [acceptance.md](C:/Users/admin/Documents/yangjingjing/acceptance.md)
+- [QA_History.md](C:/Users/admin/Documents/yangjingjing/QA_History.md)

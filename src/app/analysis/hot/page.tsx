@@ -1,5 +1,8 @@
 import Link from "next/link";
+import { HistoryTracker } from "@/components/history-tracker";
 import { HotAnalysisVisuals } from "@/components/hot-analysis-visuals";
+import { SubpageFooterNav } from "@/components/subpage-footer-nav";
+import { SubpageTopNav } from "@/components/subpage-top-nav";
 import { DISCIPLINE_OPTIONS } from "@/lib/disciplines";
 import { getHomeInsights } from "@/lib/home-insights";
 import { SOURCE_LABELS } from "@/lib/source-labels";
@@ -21,28 +24,6 @@ function takeFirst(value?: string | string[]) {
   return Array.isArray(value) ? value[0] : value;
 }
 
-function buildProjectsLink(source: string, title?: string, year?: number, discipline?: string) {
-  const search = new URLSearchParams();
-
-  if (title) {
-    search.set("title", title);
-  }
-
-  if (year) {
-    search.set("year", String(year));
-  }
-
-  if (discipline) {
-    search.set("discipline", discipline);
-  }
-
-  if (source && source !== "all") {
-    search.set("source", source);
-  }
-
-  return `/projects?${search.toString()}`;
-}
-
 export default async function HotAnalysisPage({ searchParams }: HotAnalysisPageProps) {
   const params = (await searchParams) ?? {};
   const source = takeFirst(params.source) ?? "all";
@@ -59,15 +40,25 @@ export default async function HotAnalysisPage({ searchParams }: HotAnalysisPageP
 
   return (
     <main className="page-shell page-shell--wide page-shell--results">
+      <HistoryTracker
+        category="热点分析"
+        href={`/analysis/hot?${new URLSearchParams({
+          ...(source ? { source } : {}),
+          ...(hotDiscipline ? { hotDiscipline } : {}),
+          ...(hotYears ? { hotYears: String(hotYears) } : {}),
+          ...(hotKeyword ? { hotKeyword } : {})
+        }).toString()}`}
+        title={hotKeyword ? `热点分析：${hotKeyword}` : "热点分析"}
+      />
+
+      <SubpageTopNav currentPath="/analysis/hot" />
+
       <section className="search-workbench analysis-workbench">
         <div className="search-workbench__top">
           <div>
             <h1>热点分析</h1>
             <p>按来源、学科分类、分析时段和关键词筛选，结果以热力图和年度主题分布形式展示。</p>
           </div>
-          <Link className="search-workbench__back" href="/">
-            返回首页
-          </Link>
         </div>
 
         <form action="/analysis/hot" className="analysis-filter analysis-filter--page">
@@ -123,12 +114,13 @@ export default async function HotAnalysisPage({ searchParams }: HotAnalysisPageP
 
       <section className="analysis-panel analysis-panel--page">
         <div className="analysis-caption analysis-caption--page">
-          当前范围：{insights.sourceLabel} / {insights.hot.discipline || "全部学科"} / 近{" "}
-          {insights.hot.rangeLabel}
+          当前范围：{insights.sourceLabel} / {insights.hot.discipline || "全部学科"} / {insights.hot.rangeLabel}
           {insights.hot.keyword ? ` / 关键词：${insights.hot.keyword}` : ""}
         </div>
         <HotAnalysisVisuals filterSource={insights.filterSource} hot={insights.hot} />
       </section>
+
+      <SubpageFooterNav currentPath="/analysis/hot" />
     </main>
   );
 }

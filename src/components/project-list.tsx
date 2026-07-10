@@ -6,7 +6,7 @@ export function ProjectList({ response }: { response: ProjectListResponse }) {
     return (
       <section className="empty-state">
         <h2>暂无匹配结果</h2>
-        <p>可以尝试切换来源、年份，或重新调整课题名称、学科分类和工作单位。</p>
+        <p>可以尝试调整课题名称、学科分类、工作单位、来源或立项年份。</p>
       </section>
     );
   }

@@ -2,7 +2,7 @@ import { SOURCE_LABELS } from "@/lib/source-labels";
 import type { ProjectListItem } from "@/types/project";
 
 function fallback(value?: string | number | null) {
-  return value ?? "待补全";
+  return value ?? "待补充";
 }
 
 export function ProjectCard({
@@ -30,7 +30,7 @@ export function ProjectCard({
             查看来源
           </a>
         ) : (
-          "待补全"
+          "待补充"
         )}
       </td>
     </tr>

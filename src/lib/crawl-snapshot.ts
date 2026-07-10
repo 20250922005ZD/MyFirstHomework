@@ -1,10 +1,40 @@
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import type { NormalizedProjectCandidate } from "@/crawlers/types";
+import { repairProjectRecord } from "@/lib/text-repair";
 import type { ProjectRecord } from "@/types/project";
 
 const SNAPSHOT_DIR = path.join(process.cwd(), "data");
 const SNAPSHOT_FILE = path.join(SNAPSHOT_DIR, "projects.snapshot.json");
+
+function repairBrokenJsonLine(line: string) {
+  const quoteCount = [...line].filter((char, index) => {
+    if (char !== '"') {
+      return false;
+    }
+
+    return index === 0 || line[index - 1] !== "\\";
+  }).length;
+
+  if (quoteCount % 2 === 0) {
+    return line;
+  }
+
+  if (line.trimEnd().endsWith(",")) {
+    return line.replace(/,\s*$/, '",');
+  }
+
+  return `${line}"`;
+}
+
+function repairSnapshotJson(raw: string) {
+  return raw
+    .replace(/^\uFEFF/, "")
+    .replace(/\u0000/g, "")
+    .split(/\r?\n/)
+    .map(repairBrokenJsonLine)
+    .join("\n");
+}
 
 function toProjectRecord(
   project: NormalizedProjectCandidate,
@@ -49,8 +79,8 @@ async function ensureDir() {
 export async function readProjectSnapshot(): Promise<ProjectRecord[]> {
   try {
     const raw = await readFile(SNAPSHOT_FILE, "utf8");
-    const parsed = JSON.parse(raw) as { items?: ProjectRecord[] };
-    return Array.isArray(parsed.items) ? parsed.items : [];
+    const parsed = JSON.parse(repairSnapshotJson(raw)) as { items?: ProjectRecord[] };
+    return Array.isArray(parsed.items) ? parsed.items.map(repairProjectRecord) : [];
   } catch {
     return [];
   }
